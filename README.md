@@ -33,6 +33,19 @@ $ npm install
 ```
 
 ## Compile and run the project
+create .env file, and and these items
+```bash
+# database for prisma, this is currently using sqlite
+$ DATABASE_URL="file:./dev.db"
+# JWT Keys
+$ JWT_ACCESS_SECRET='smaple'
+$ JWT_REFRESH_SECRET='sample'
+
+# you can generate these keys on your terminal with the following code
+$ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+## Compile and run the project
 
 ```bash
 # development

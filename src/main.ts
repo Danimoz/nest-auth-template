@@ -10,7 +10,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
-    .setTitle('Checkit Assessment')
+    .setTitle('Auth API')
     .setVersion('1.0')
     .build();
 
