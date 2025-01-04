@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  password     String
+  role         String         @default("REGULAR") // REGULAR OR ADMIN
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Order        Order[]
+  Message      Message[]
+  RefreshToken RefreshToken[]
+}
+
+model Order {
+  id             Int       @id @default(autoincrement())
+  description    String
+  specifications String
+  quantity       Int
+  status         String    @default("REVIEW") // "REVIEW", "PROCESSING", "COMPLETED"
+  userId         Int
+  user           User      @relation(fields: [userId], references: [id])
+  chatRoom       ChatRoom?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ChatRoom {
+  id        Int       @id @default(autoincrement())
+  orderId   Int       @unique
+  order     Order     @relation(fields: [orderId], references: [id])
+  messages  Message[]
+  isClosed  Boolean   @default(false)
+  summary   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  content    String
+  userId     Int
+  chatRoomId Int
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    Int
+  token     String // You could store a hashed version if you want
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Enums are not supported in SQLITE
+// enum Role {
+//   ADMIN
+//   REGULAR
+// }
+
+// enum OrderStatus {
+//   REVIEW
+//   PROCESSING
+//   COMPLETED
+// }
